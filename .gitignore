@@ -1,2 +1,8 @@
 __pycache__
 .venv
+src/proxi_API/data/unica_pedestrian
+src/proxi_API/data/proximity_time_spain
+src/proxi_API/data/unica_sociodemographics
+src/proxi_API/data/cities
+dist
+src/proxi_API.egg-info

@@ -1,6 +1,6 @@
 # db_methods.py
 
-from api_sk.core.config import settings
+from proxi_API.core.config import settings
 import json
 
 
