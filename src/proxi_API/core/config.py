@@ -1,6 +1,5 @@
 # config.py
 
-from proxi_API.data.fake_db import users_db
 
 # Setting for the API
 

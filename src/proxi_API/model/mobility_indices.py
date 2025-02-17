@@ -1,8 +1,10 @@
 import pandas as pd
 import geopandas as gpd
 import numpy as np
+from pathlib import Path
+from proxi_API.data.settings import CITY
 
-
+out = Path(__file__).parents[1] / 'data' / 'cities'
 
 def main(agg):
 
@@ -15,3 +17,24 @@ def main(agg):
     agg['transporte_index'] = agg.proximity_time_foot*agg.acceso_tpte_p_blico_total/agg.acceso_tpte_p_blico_total.sum()
     
     return agg
+
+
+def metric_comp(sliders):
+        dataset = gpd.read_file(out / f'{CITY}_agg.geojson')
+        params = ['residentes', 
+                    'turistas', 
+                    'trabajadores',
+                    'compras',
+                    'hosteleria',
+                    'transporte'
+                    ]
+   
+        metrics = np.array([dataset[x+'_index'] for x in params]).T
+        df = dataset[['h3_id']].copy()
+        df['value'] = metrics@sliders
+        for i, x in enumerate(params):
+            df[x] = sliders[i]
+
+        metrics = gpd.read_file(out / f'{CITY}_metrics.geojson')
+        metrics = gpd.GeoDataFrame( pd.concat([metrics, df], ignore_index=True) )
+        metrics.to_file(out / f'{CITY}_metrics.geojson',driver="GeoJSON")

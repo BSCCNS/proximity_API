@@ -11,6 +11,7 @@ from proxi_API.model import data_aggregation
 from proxi_API.model import mobility_indices
 from proxi_API.model import h3_mapping 
 
+
 import logging
 
 logger = logging.getLogger("uvicorn.error")
@@ -81,9 +82,28 @@ def main(CITY):
 
         logger.info('Mapping H3 cells')
         agg = h3_mapping.main(agg)
+        
+
+        logger.info('Precomputing mobility indices')
+        agg = mobility_indices.main(agg)
+
         agg = agg.reset_index(drop=True)
         agg.to_file(out / f'{CITY}_agg.geojson', driver="GeoJSON")
-        logger.info('Aggregation of data finished.')
+        logger.info('Aggregated data saved to disk.')
 
     else:
         logger.info('Aggregated data already exists.')
+    
+    # Finally, we check the database file to store results 
+    if not Path(out / f'{CITY}_metrics.json').is_file():
+        columnas = ['residentes', 
+                    'turistas', 
+                    'trabajadores',
+                    'compras',
+                    'hosteleria',
+                    'transporte',
+                    'value', 'h3_id'
+                    ]
+        df = gpd.GeoDataFrame(columns=columnas)
+
+        df.to_file(out / f'{CITY}_metrics.geojson',driver="GeoJSON")
