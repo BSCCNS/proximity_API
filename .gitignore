@@ -6,3 +6,4 @@ src/proxi_API/data/unica_sociodemographics
 src/proxi_API/data/cities
 dist
 src/proxi_API.egg-info
+.DS_Store
