@@ -29,8 +29,7 @@ def main(CITY):
         # Reading the proximity time files and using them to establish the bounding box
         proximity = gpd.read_file(data / 'proximity_time_spain' / f'{CITY}.geojson')
         bbox = proximity.total_bounds
-        logger.info('Mapping H3 cells')
-        proximity = h3_mapping.main(proximity)
+        
         #If the file exists, we do not compute it
         if not Path(out / f'{CITY}_pedestrian.geojson').is_file():
             path = data / 'unica_pedestrian'
@@ -80,6 +79,9 @@ def main(CITY):
         agg = mobility_indices.main(agg)
         agg = agg.reset_index(drop=True)
 
+        logger.info('Mapping H3 cells')
+        agg = h3_mapping.main(agg)
+        agg = agg.reset_index(drop=True)
         agg.to_file(out / f'{CITY}_agg.geojson', driver="GeoJSON")
         logger.info('Aggregation of data finished.')
 

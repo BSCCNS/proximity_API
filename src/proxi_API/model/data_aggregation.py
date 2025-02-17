@@ -42,8 +42,8 @@ def main(pedestrian, proximity, sdemo):
 
 
     prox = proximity[proximity['proximity_time_foot']<CUTOFF]
-    
-    proximity_expanded = prox.sjoin(pedestrian,how="inner", predicate='intersects').drop('index_right', axis = 'columns')
+    prox = prox.set_crs(proximity.crs)
+    proximity_expanded = prox.sjoin(pedestrian, how="inner", predicate='intersects').drop('index_right', axis = 'columns')
     
     proximity_expanded = proximity_expanded.sjoin(sdemo,how="inner", predicate='intersects') 
 

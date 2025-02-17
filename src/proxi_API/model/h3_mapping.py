@@ -25,16 +25,20 @@ def main(df, method = 'mean'):
 
 
     # Apply function to GeoDataFrame
-    df = df.drop(['centroid_lon','centroid_lat','population'], axis = 1)
+    
     df["h3_id"] = df["geometry"].apply(lambda x: get_h3_id(x, H3_ZOOM))
     
     dic = {}
     for col in df.columns:
-        if col != 'geometry':
-                dic[col] = method
-    dic['h3_id'] = 'first'
+        if col != "geometry":
+            if df[col].dtype in ["int64", "float64"]:  # Numeric columns
+                dic[col] = "mean"
+            else:
+                dic[col] = "first"  # Non-numeric columns
+    dic["h3_id"] = "first"  # Ensure h3_id is retained
 
 
-    df_grouped = df.dissolve(by="h3_id", aggfunc=dic,)
+
+    df_grouped = df.dissolve(by="h3_id", aggfunc=dic)
 
     return df_grouped
