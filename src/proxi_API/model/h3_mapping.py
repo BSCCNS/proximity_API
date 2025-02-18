@@ -21,7 +21,7 @@ def main(df, method = 'mean'):
 
     def get_h3_id(geometry, resolution):
         centroid = geometry.centroid
-        return h3.latlng_to_cell(centroid.y, centroid.x, resolution)
+        return h3.latlng_to_cell(centroid.x, centroid.y, resolution)
 
 
     # Apply function to GeoDataFrame

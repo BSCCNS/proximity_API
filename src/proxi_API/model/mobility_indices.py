@@ -2,7 +2,8 @@ import pandas as pd
 import geopandas as gpd
 import numpy as np
 from pathlib import Path
-from proxi_API.data.settings import CITY
+from proxi_API.data.settings import CITY, H3_ZOOM
+import inequality
 
 out = Path(__file__).parents[1] / 'data' / 'cities'
 
@@ -37,7 +38,33 @@ def metric_comp(sliders):
         for i, x in enumerate(params):
             df[x] = sliders[i]
 
+
+        total = df.value.sum()
+        gini_index = 100*inequality.gini.Gini(df['value'].values).g
+        theil_index = inequality.theil.Theil(df['value'].values).T
+        theil_percent = 100*(1-np.exp(-1*theil_index))
+
+        prox_times = [dataset[x+'_index'].sum() for x in ['mob']+params]
+        heads = params + [x+'_time' for x in ['mob']+params] + ['averaged_time', 'gini (%)', 'theil', 'theil (%)']
+        val = np.concatenate((sliders,prox_times, np.array([total ,gini_index, theil_index, theil_percent]) )) 
+
+        #Appending to the indices file
+        if Path(out / f'{CITY}_{H3_ZOOM}_indices.json').is_file():
+             indices = pd.read_json(out / f'{CITY}_{H3_ZOOM}_indices.json')
+
+        else:
+             indices = pd.DataFrame(columns = heads)
+
+        indices.loc[len(indices)] = val
+
+        indices= indices.reset_index(drop = True).drop_duplicates()
+
+        indices.to_json(out / f'{CITY}_{H3_ZOOM}_indices.json')
+
+        #Appending to the metrics file
         metrics = gpd.read_file(out / f'{CITY}_{H3_ZOOM}_metrics.geojson')
-        metrics = gpd.GeoDataFrame( pd.concat([metrics, df], ignore_index=True) )
-        metrics = metrics.drop_duplicates()
+        metrics = gpd.GeoDataFrame(pd.concat([metrics, df])).drop_duplicates()
+        
         metrics.to_file(out / f'{CITY}_{H3_ZOOM}_metrics.geojson',driver="GeoJSON")
+
+

@@ -41,8 +41,7 @@ def main(pedestrian, proximity, sdemo):
     sdemo['income_bin'] = pd.cut(sdemo['renta_hab_disp'], bins=bins, labels=labels, right=False)
 
 
-    prox = proximity[proximity['proximity_time_foot']<CUTOFF]
-    prox = prox.set_crs(proximity.crs)
+    prox = proximity.set_crs(proximity.crs)
     proximity_expanded = prox.sjoin(pedestrian, how="inner", predicate='intersects').drop('index_right', axis = 'columns')
     
     proximity_expanded = proximity_expanded.sjoin(sdemo,how="inner", predicate='intersects') 
@@ -54,6 +53,6 @@ def main(pedestrian, proximity, sdemo):
     proximity_aggregated = proximity_expanded.dissolve(
         by="geoid_left",
         aggfunc=aggdict,
-    ).dropna()
+    )
 
     return proximity_aggregated

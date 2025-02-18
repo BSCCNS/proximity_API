@@ -1,6 +1,6 @@
 # endpoints.py
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 import asyncio
 import logging
 from proxi_API.model import setup_city
