@@ -20,7 +20,9 @@ def main(agg):
 
 
 def metric_comp(sliders):
-        dataset = gpd.read_file(out / f'{CITY}_agg.geojson')
+        sliders = np.array(sliders)
+        sliders = sliders/sum(sliders)
+        dataset = gpd.read_file(out / f'{CITY}_{H3_ZOOM}_agg.geojson')
         params = ['residentes', 
                     'turistas', 
                     'trabajadores',
@@ -35,6 +37,7 @@ def metric_comp(sliders):
         for i, x in enumerate(params):
             df[x] = sliders[i]
 
-        metrics = gpd.read_file(out / f'{CITY}_metrics.geojson')
+        metrics = gpd.read_file(out / f'{CITY}_{H3_ZOOM}_metrics.geojson')
         metrics = gpd.GeoDataFrame( pd.concat([metrics, df], ignore_index=True) )
-        metrics.to_file(out / f'{CITY}_metrics.geojson',driver="GeoJSON")
+        metrics = metrics.drop_duplicates()
+        metrics.to_file(out / f'{CITY}_{H3_ZOOM}_metrics.geojson',driver="GeoJSON")

@@ -23,12 +23,5 @@ class InputSliders(BaseModel):
     # Residentes, turistas, trabajadores/estudiantes
     # Compras/ocio, acceso hostelería, acceso transporte público
 
-    @field_validator("sliders")
-    @classmethod
-    def normalize_list(cls, v: List[float]) -> List[float]:
-        total = sum(v)
-        if total == 0:
-            raise ValueError("Slider values cannot be zero")
-        return np.array([x / total for x in v])  # Normalize elements
     
     
