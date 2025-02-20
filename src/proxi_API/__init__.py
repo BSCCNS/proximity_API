@@ -21,37 +21,36 @@ app.include_router(api_router)
 path = Path(__file__).parent / "images"
 app.mount("/images", StaticFiles(directory=path), name="images")
 
+
 # Custom OpenAPI schema to include logo.
 def custom_openapi():
 
     if app.openapi_schema:
         return app.openapi_schema
-    
+
     openapi_schema = get_openapi(
         title=settings.PROJECT_NAME,
         version=settings.PROJECT_VERSION,
         summary=settings.SUMMARY,
         description=settings.DESCRIPTION,
-        routes=app.routes
+        routes=app.routes,
     )
 
-    openapi_schema["info"]["x-logo"] = {
-        "url": "/images/Logo_blue.png"
-    }
+    openapi_schema["info"]["x-logo"] = {"url": "/images/Logo_blue.png"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
+
 
 app.openapi = custom_openapi
 
 
 @app.get("/redoc", include_in_schema=False)
 def overridden_redoc():
-	return get_redoc_html(
-        openapi_url="/openapi.json", 
-        title="ProxiAPI", 
-        redoc_favicon_url="/images/favicon.png"
+    return get_redoc_html(
+        openapi_url="/openapi.json",
+        title="ProxiAPI",
+        redoc_favicon_url="/images/favicon.png",
     )
-
 
 
 #####################################

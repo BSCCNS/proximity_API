@@ -8,7 +8,7 @@ out = Path(__file__).parents[1] / "data" / "cities"
 
 
 def main(agg):
-    '''
+    """
     Computes the mobility indices for the different pedestrian types.
 
     Parameters:
@@ -16,9 +16,9 @@ def main(agg):
 
     Returns:
         GeoDataFrame: Original dataframe with the new data added
-    
-    
-    '''
+
+
+    """
     agg["mob_index"] = agg.proximity_time_foot * agg.p_t / agg.p_t.sum()
     agg["residentes_index"] = (
         agg.proximity_time_foot * agg.residentes_total / agg.residentes_total.sum()
@@ -51,7 +51,7 @@ def main(agg):
 
 
 def metric_comp(sliders):
-    '''
+    """
     Returns the proximity times and inequality metrics for the pedestrian categories, weighted by the input sliders.
 
     Parameters:
@@ -59,10 +59,8 @@ def metric_comp(sliders):
 
     Returns:
         Dict: Dictionary containing the proximity and inequality metrics
-    
-    '''
 
-
+    """
 
     sliders = np.array(sliders)
     sliders = sliders / sum(sliders)
@@ -83,7 +81,7 @@ def metric_comp(sliders):
         "leisure",
         "access to hospitality",
         "access to public transport",
-    ] 
+    ]
 
     metrics = np.array([dataset[x + "_index"] for x in params]).T
     df = dataset[["h3_id"]].copy()

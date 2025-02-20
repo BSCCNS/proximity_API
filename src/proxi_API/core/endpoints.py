@@ -11,10 +11,10 @@ from proxi_API.schemas import schemas
 from proxi_API.model.mobility_indices import metric_comp
 
 
-router = APIRouter() #Loading the endpoints in a router.
+router = APIRouter()  # Loading the endpoints in a router.
 
-logger = logging.getLogger("uvicorn.error") #Logger for logging info
-tasks = {} #Dictionary to store the queue of tasks running/completed
+logger = logging.getLogger("uvicorn.error")  # Logger for logging info
+tasks = {}  # Dictionary to store the queue of tasks running/completed
 
 
 # Metadata for the tags in the documentation
@@ -29,23 +29,23 @@ tags_metadata = [
     },
 ]
 
-def after_task_done(task, task_id):
-    '''
-        After a task is finished, it changes its status in the queue to completed.
 
-        ### Parameters:
-        - task (asyncio.task): Task being executed.
-        - task_id (str): ID of the task, acting as the key of a dictionary.
-    '''
+def after_task_done(task, task_id):
+    """
+    After a task is finished, it changes its status in the queue to completed.
+
+    ### Parameters:
+    - task (asyncio.task): Task being executed.
+    - task_id (str): ID of the task, acting as the key of a dictionary.
+    """
 
     tasks[task_id].status = "Completed"
 
 
 # Endpoint to setup the model for a given city (currently, the city is being read from data/settings.py)
-@router.get("/setup",
-            summary = "Setup the app for a given city.",
-            tags=["Proximity time"]
-            )
+@router.get(
+    "/setup", summary="Setup the app for a given city.", tags=["Proximity time"]
+)
 async def setup():
     """
     Perform asynchronous setup for processing a city model.
@@ -93,10 +93,11 @@ async def setup():
 
 
 # Endpoint to compute the ponderated average of metrics
-@router.post("/proximity_time",
-             summary = 'Computes the proximity time and metrics.',
-             tags=["Proximity time"],
-             )
+@router.post(
+    "/proximity_time",
+    summary="Computes the proximity time and metrics.",
+    tags=["Proximity time"],
+)
 async def prox_time(input: schemas.InputSliders):
     """
     Computes global metrics associated to te accesibility of the city.
@@ -117,7 +118,7 @@ async def prox_time(input: schemas.InputSliders):
 
     ### Parameters:
     - `sliders` (array): Six dimensional array containing the numerical weights for each category of pedestrians
-    
+
     ### Returns:
     - `dict`: A dictionary containing the metrics and indices.
     """
@@ -130,10 +131,11 @@ async def prox_time(input: schemas.InputSliders):
 ###Task management###
 ####################
 # Endpoint to check tasks running
-@router.get("/list", 
-            summary="Query running and completed tasks.",
-            tags = ['Task management'],
-            )
+@router.get(
+    "/list",
+    summary="Query running and completed tasks.",
+    tags=["Task management"],
+)
 async def check_tasks():
     """
     Checks which tasks are being executed or finished in the backend.
@@ -143,10 +145,11 @@ async def check_tasks():
 
 
 # Endpoint to check the status of a specific task
-@router.get("/status/{task_id}", 
-            summary="Check the status of a given task.",
-            tags = ['Task management'],
-            )
+@router.get(
+    "/status/{task_id}",
+    summary="Check the status of a given task.",
+    tags=["Task management"],
+)
 async def status(task_id: str):
     """
     Checks the current status of a task by ID.
@@ -168,10 +171,11 @@ async def status(task_id: str):
 
 
 # Endpoint to stop the task
-@router.delete("/stop/{task_id}", 
-               summary="Stop a running task.",
-               tags = ['Task management'],
-               )
+@router.delete(
+    "/stop/{task_id}",
+    summary="Stop a running task.",
+    tags=["Task management"],
+)
 async def stop_model(task_id: str):
     """
     Stops a running task, provided its ID.

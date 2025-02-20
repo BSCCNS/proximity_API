@@ -1,7 +1,7 @@
 import numpy as np
 from pathlib import Path
 
-data = Path(__file__).parents[1] / "data" / "cities"  #Data path
+data = Path(__file__).parents[1] / "data" / "cities"  # Data path
 
 
 # Labels for the aggregation of data
@@ -13,7 +13,7 @@ cols = [
     "compras_ocio",
     "acceso_hosteler_a",
     "acceso_tpte_p_blico",
-] 
+]
 
 
 categ = [
@@ -34,7 +34,7 @@ def agg(col):
     Dictionary for aggregation of data.
 
     Parameters:
-        col (str): Name of the column of the dataset. 
+        col (str): Name of the column of the dataset.
     """
     if col.find("total") >= 0:
         return "sum"  # for columns indicating total quantities, we sum them
@@ -45,7 +45,7 @@ def agg(col):
 def main(pedestrian, proximity, sdemo):
     """
     Aggregates the datasets by using spatial joins. It projects the street info into the cells of the proximity dataset.
-    
+
     Parameters:
         pedestrian (df): Dataset containing the information about pedestrian flow
         proximity (df): Dataset containing the information about proximity time

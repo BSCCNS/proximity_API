@@ -3,32 +3,32 @@ import h3
 
 
 def get_h3_id(geometry, resolution):
-        '''
-        Computes the H3 cell centered at the centroid of a given geometry.
+    """
+    Computes the H3 cell centered at the centroid of a given geometry.
 
-        Parameters:
-            geometry (shapley object): Geometry object
-            resolution (int): Resolution scale for the H3 hexagons
+    Parameters:
+        geometry (shapley object): Geometry object
+        resolution (int): Resolution scale for the H3 hexagons
 
-        Returns:
-            str: H3 ID of the hexagon
-        
-        '''
-        centroid = geometry.centroid
-        return h3.latlng_to_cell(centroid.x, centroid.y, resolution)
+    Returns:
+        str: H3 ID of the hexagon
+
+    """
+    centroid = geometry.centroid
+    return h3.latlng_to_cell(centroid.x, centroid.y, resolution)
+
 
 def main(df, method="mean"):
-    '''
-        Computes the h3 cells covering a given dataset.
+    """
+    Computes the h3 cells covering a given dataset.
 
-        Parameters:
-            df (GeoDataFrame): Dataframe with geometry info
-            method (optional, str): Method of aggregation for large resolutions
+    Parameters:
+        df (GeoDataFrame): Dataframe with geometry info
+        method (optional, str): Method of aggregation for large resolutions
 
-        Returns:
-            GeoDataFrame: Dataframe converted to H3
-    '''
-    
+    Returns:
+        GeoDataFrame: Dataframe converted to H3
+    """
 
     # Apply function to GeoDataFrame
 

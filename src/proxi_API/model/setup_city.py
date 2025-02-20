@@ -14,7 +14,7 @@ import osmnx as ox
 import logging
 
 # Set logger for logging info
-logger = logging.getLogger("uvicorn.error") 
+logger = logging.getLogger("uvicorn.error")
 
 # Set data paths
 data = Path(__file__).parents[1] / "data"
@@ -22,8 +22,9 @@ out = Path(__file__).parents[1] / "data" / "cities"
 
 cols = data_aggregation.cols
 
+
 def main(CITY):
-    '''
+    """
     Setups the API for a specified city. It
     - Produces a bounding box for the city
     - Reads the proximity time data (provided by SONY)
@@ -33,8 +34,8 @@ def main(CITY):
 
     If data is already present, it skips computation.
 
-    
-    '''
+
+    """
     if not Path(out / f"{CITY}_{H3_ZOOM}_agg.geojson").is_file():
         # Check folder and create it if not
         out.mkdir(parents=True, exist_ok=True)
@@ -126,5 +127,3 @@ def main(CITY):
 
     else:
         logger.info("Aggregated data already exists.")
-
-
