@@ -10,24 +10,24 @@ from proxi_API.model import mobility_indices
 import logging
 import h3
 
+
 def agg(col):
-        if col.find("total")>=0:
-            return "sum" # for columns indicating total quantities, we sum them
-        else:
-            return "mean" # for columns indicating ratios, we average them
+    if col.find("total") >= 0:
+        return "sum"  # for columns indicating total quantities, we sum them
+    else:
+        return "mean"  # for columns indicating ratios, we average them
 
 
-def main(df, method = 'mean'):
+def main(df, method="mean"):
 
     def get_h3_id(geometry, resolution):
         centroid = geometry.centroid
         return h3.latlng_to_cell(centroid.x, centroid.y, resolution)
 
-
     # Apply function to GeoDataFrame
-    
+
     df["h3_id"] = df["geometry"].apply(lambda x: get_h3_id(x, H3_ZOOM))
-    
+
     dic = {}
     for col in df.columns:
         if col != "geometry":
@@ -36,8 +36,6 @@ def main(df, method = 'mean'):
             else:
                 dic[col] = "first"  # Non-numeric columns
     dic["h3_id"] = "first"  # Ensure h3_id is retained
-
-
 
     df_grouped = df.dissolve(by="h3_id", aggfunc=dic)
 
