@@ -98,6 +98,12 @@ def main(CITY):
         agg.to_file(out / f'{CITY}_{H3_ZOOM}_agg.geojson', driver="GeoJSON")
         logger.info('Aggregated data saved to disk.')
 
+
+        mp = agg[['geometry', 'proximity_time_foot']]
+        mp.to_file(out / f'{CITY}_{H3_ZOOM}_map.geojson',driver="GeoJSON")
+
+        logger.info('Map saved to disk')
+
     else:
         logger.info('Aggregated data already exists.')
     

@@ -59,28 +59,9 @@ async def setup():
 @router.post("/proximity_time")
 async def prox_time(input: schemas.InputSliders):
 
-    task_id = str(uuid.uuid4())  # Generate a unique ID for the task
-    logger.info(f"Starting run with task ID: {task_id}")
-
-    async def metric_task(task_id):
-        try:
-            await asyncio.to_thread(metric_comp, input.sliders)
-            logger.info(f"Run with task ID: {task_id} finished")
-        except asyncio.CancelledError:
-            logger.info(f"Run with task ID: {task_id} cancelled")
-            raise  # Propagate the cancellation exception
-
-    time = str(datetime.datetime.now())
+    result = metric_comp(input.sliders)
     
-    task = asyncio.create_task(metric_task(task_id))
-    task_ob = schemas.ModelTask(task=task, 
-                                start_time=time, 
-                                type = 'Proximity_time',
-                                city = CITY
-                                )
-    tasks[task_id] = task_ob
-    task.add_done_callback(lambda t: after_task_done(t, task_id))
-    return {"task_id": task_id}
+    return result
 
 # Endpoint to check tasks running
 @router.get("/list", summary="Query running and completed tasks.")

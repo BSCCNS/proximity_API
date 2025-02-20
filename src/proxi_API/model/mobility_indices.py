@@ -45,26 +45,14 @@ def metric_comp(sliders):
         theil_percent = 100*(1-np.exp(-1*theil_index))
 
         prox_times = [dataset[x+'_index'].sum() for x in ['mob']+params]
-        heads = params + [x+'_time' for x in ['mob']+params] + ['averaged_time', 'gini (%)', 'theil', 'theil (%)']
-        val = np.concatenate((sliders,prox_times, np.array([total ,gini_index, theil_index, theil_percent]) )) 
+        heads = [x+'_time' for x in ['mob']+params] + ['averaged_time', 'gini (%)', 'theil', 'theil (%)']
+        val = np.concatenate((prox_times, np.array([total ,gini_index, theil_index, theil_percent]) )) 
 
-        #Appending to the indices file
-        if Path(out / f'{CITY}_{H3_ZOOM}_indices.json').is_file():
-             indices = pd.read_json(out / f'{CITY}_{H3_ZOOM}_indices.json')
 
-        else:
-             indices = pd.DataFrame(columns = heads)
+        result = {x:y for x,y in zip(heads, val)}
 
-        indices.loc[len(indices)] = val
+        return result
 
-        indices= indices.reset_index(drop = True).drop_duplicates()
 
-        indices.to_json(out / f'{CITY}_{H3_ZOOM}_indices.json')
-
-        #Appending to the metrics file
-        metrics = gpd.read_file(out / f'{CITY}_{H3_ZOOM}_metrics.geojson')
-        metrics = gpd.GeoDataFrame(pd.concat([metrics, df])).drop_duplicates()
-        
-        metrics.to_file(out / f'{CITY}_{H3_ZOOM}_metrics.geojson',driver="GeoJSON")
 
 
