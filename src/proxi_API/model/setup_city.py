@@ -45,7 +45,10 @@ def main(CITY):
 
         logger.info("Reading proximity time data.")
         # Reading the proximity time files and using them to establish the bounding box
-        proximity = gpd.read_file(data / "proximity_time_spain" / f"{CITY}.geojson")
+        if CITY == 'Viladecans':
+            proximity = gpd.read_file(data / "proximity_time_spain" / "Barcelona.geojson")
+        else:
+            proximity = gpd.read_file(data / "proximity_time_spain" / f"{CITY}.geojson")
         proximity = proximity.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
         # If the file exists, we do not compute it
@@ -112,9 +115,6 @@ def main(CITY):
 
         logger.info("Mapping H3 cells")
         agg = h3_mapping.main(agg)
-
-        logger.info("Precomputing mobility indices")
-        agg = mobility_indices.main(agg)
 
         agg = agg.reset_index(drop=True)
         agg.to_file(out / f"{CITY}_{H3_ZOOM}_agg.geojson", driver="GeoJSON")

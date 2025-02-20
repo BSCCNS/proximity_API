@@ -20,3 +20,6 @@ class InputSliders(BaseModel):
     # En este orden:
     # Residentes, turistas, trabajadores/estudiantes
     # Compras/ocio, acceso hostelería, acceso transporte público
+
+class InputCity(BaseModel):
+    city: str = 'Barcelona'

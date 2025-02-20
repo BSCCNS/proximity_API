@@ -1,7 +1,7 @@
 import geopandas as gpd
 import numpy as np
 from pathlib import Path
-from proxi_API.data.settings import CITY, H3_ZOOM
+from proxi_API.data.settings import H3_ZOOM
 import inequality
 
 out = Path(__file__).parents[1] / "data" / "cities"
@@ -50,7 +50,7 @@ def main(agg):
     return agg
 
 
-def metric_comp(sliders):
+def metric_comp(CITY, sliders):
     """
     Returns the proximity times and inequality metrics for the pedestrian categories, weighted by the input sliders.
 

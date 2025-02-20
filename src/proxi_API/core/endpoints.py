@@ -1,15 +1,16 @@
 # endpoints.py
-
+from typing import Annotated
+from enum import Enum
 from fastapi import APIRouter, HTTPException
 import asyncio
 import logging
 from proxi_API.model import setup_city
-from proxi_API.data.settings import CITY
 import datetime
 import uuid
 from proxi_API.schemas import schemas
 from proxi_API.model.mobility_indices import metric_comp
-
+from proxi_API.data.settings import H3_ZOOM
+from pathlib import Path
 
 router = APIRouter()  # Loading the endpoints in a router.
 
@@ -42,11 +43,24 @@ def after_task_done(task, task_id):
     tasks[task_id].status = "Completed"
 
 
+#####################
+###Proximity time###
+####################
+# 
+
+# We set city defaults
+class AvailableCities(str, Enum):
+    Barcelona = "Barcelona"
+    Madrid = 'Madrid'
+    Oviedo = "Oviedo"
+    Viladecans = 'Viladecans'
+    
+
 # Endpoint to setup the model for a given city (currently, the city is being read from data/settings.py)
 @router.get(
-    "/setup", summary="Setup the app for a given city.", tags=["Proximity time"]
+    "/setup/{city}", summary="Setup the app for a given city.", tags=["Proximity time"]
 )
-async def setup():
+async def setup(city: AvailableCities):
     """
     Perform asynchronous setup for processing a city model.
 
@@ -59,6 +73,9 @@ async def setup():
     - Logging the start, progress, and completion (or cancellation) of the task.
     - Returning a dictionary containing the unique task identifier.
 
+    ### Parameters:
+    - city (choice): City to setup the model for. Select from the list.
+    
     ### Returns:
     - `dict`: A dictionary with the key `'task_id'` mapped to the unique identifier of the asynchronous task.
 
@@ -74,7 +91,7 @@ async def setup():
         try:
 
             logger.info("Running - Preparing datasets")
-            await asyncio.to_thread(setup_city.main, CITY)
+            await asyncio.to_thread(setup_city.main, city.value)
 
             logger.info(f"Run with task ID: {task_id} finished")
         except asyncio.CancelledError:
@@ -85,7 +102,7 @@ async def setup():
 
     task = asyncio.create_task(setup_task(task_id))
     task_ob = schemas.ModelTask(
-        task=task, start_time=time, type="City_setup", city=CITY
+        task=task, start_time=time, type="City_setup", city=city.value
     )
     tasks[task_id] = task_ob
     task.add_done_callback(lambda t: after_task_done(t, task_id))
@@ -94,11 +111,11 @@ async def setup():
 
 # Endpoint to compute the ponderated average of metrics
 @router.post(
-    "/proximity_time",
+    "/proximity_time/{city}",
     summary="Computes the proximity time and metrics.",
     tags=["Proximity time"],
 )
-async def prox_time(input: schemas.InputSliders):
+async def prox_time(city: AvailableCities,input: schemas.InputSliders):
     """
     Computes global metrics associated to te accesibility of the city.
 
@@ -117,12 +134,18 @@ async def prox_time(input: schemas.InputSliders):
     - Theil index converted to % through 100*(1-exp(-t))
 
     ### Parameters:
+    - city (choice): City to compute the metrics for. Select from the list.
     - `sliders` (array): Six dimensional array containing the numerical weights for each category of pedestrians
 
     ### Returns:
     - `dict`: A dictionary containing the metrics and indices.
     """
-    result = metric_comp(input.sliders)
+    out = Path(__file__).parents[1] / "data" / "cities"
+
+    if not Path(out / f"{city.value}_{H3_ZOOM}_agg.geojson").is_file():
+        raise HTTPException(status_code=404, detail=f"{city.value} is not available. Run Setup first. ")
+
+    result = metric_comp(city.value, input.sliders)
 
     return result
 
