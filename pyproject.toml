@@ -3,7 +3,7 @@ name = "proxi_API"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 dependencies = [
     "commitizen>=4.2.1",
     "fastapi==0.115.6",
@@ -22,3 +22,17 @@ dependencies = [
     "seaborn>=0.13.2",
     "uvicorn==0.34.0",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+packages = ["proxi_API"]
+package-dir = {"" = "src"}
+
+[project.scripts]
+proxiapi = "proxi_API.__init__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["proxi_API*"]
+
