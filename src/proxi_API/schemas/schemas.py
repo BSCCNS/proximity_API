@@ -1,9 +1,8 @@
 # schemas.py
 
 from pydantic import BaseModel, Field, ConfigDict, conlist, field_validator
-from typing import Optional, List
+from typing import Optional
 import asyncio
-import numpy as np
 
 
 class ModelTask(BaseModel):

@@ -11,25 +11,30 @@ from proxi_API.model import data_aggregation
 from proxi_API.model import mobility_indices
 from proxi_API.model import h3_mapping
 import osmnx as ox
-
-
 import logging
 
-logger = logging.getLogger("uvicorn.error")
+# Set logger for logging info
+logger = logging.getLogger("uvicorn.error") 
+
 # Set data paths
 data = Path(__file__).parents[1] / "data"
 out = Path(__file__).parents[1] / "data" / "cities"
-cols = [
-    "residentes",
-    "visita_tur_stica",
-    "trabajadores_estudiantes",
-    "compras_ocio",
-    "acceso_hosteler_a",
-    "acceso_tpte_p_blico",
-]
 
+cols = data_aggregation.cols
 
 def main(CITY):
+    '''
+    Setups the API for a specified city. It
+    - Produces a bounding box for the city
+    - Reads the proximity time data (provided by SONY)
+    - Reads the pedestrian and socio-demographic data
+    - Aggregates all data together
+    - Dumps everything to disk
+
+    If data is already present, it skips computation.
+
+    
+    '''
     if not Path(out / f"{CITY}_{H3_ZOOM}_agg.geojson").is_file():
         # Check folder and create it if not
         out.mkdir(parents=True, exist_ok=True)
@@ -122,18 +127,4 @@ def main(CITY):
     else:
         logger.info("Aggregated data already exists.")
 
-    # Finally, we check the database file to store results
-    if not Path(out / f"{CITY}_{H3_ZOOM}_metrics.json").is_file():
-        columnas = [
-            "residentes",
-            "turistas",
-            "trabajadores",
-            "compras",
-            "hosteleria",
-            "transporte",
-            "value",
-            "h3_id",
-        ]
-        df = gpd.GeoDataFrame(columns=columnas)
 
-        df.to_file(out / f"{CITY}_{H3_ZOOM}_metrics.geojson", driver="GeoJSON")

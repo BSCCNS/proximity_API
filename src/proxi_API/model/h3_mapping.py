@@ -1,28 +1,34 @@
-import pandas as pd
-import geopandas as gpd
-import os
-from joblib import Parallel, delayed
-from pathlib import Path
-from proxi_API.data.settings import N_CORES, H3_ZOOM
-from proxi_API.model.data_processing import get_city, get_streets
-from proxi_API.model import data_aggregation
-from proxi_API.model import mobility_indices
-import logging
+from proxi_API.data.settings import H3_ZOOM
 import h3
 
 
-def agg(col):
-    if col.find("total") >= 0:
-        return "sum"  # for columns indicating total quantities, we sum them
-    else:
-        return "mean"  # for columns indicating ratios, we average them
+def get_h3_id(geometry, resolution):
+        '''
+        Computes the H3 cell centered at the centroid of a given geometry.
 
+        Parameters:
+            geometry (shapley object): Geometry object
+            resolution (int): Resolution scale for the H3 hexagons
 
-def main(df, method="mean"):
-
-    def get_h3_id(geometry, resolution):
+        Returns:
+            str: H3 ID of the hexagon
+        
+        '''
         centroid = geometry.centroid
         return h3.latlng_to_cell(centroid.x, centroid.y, resolution)
+
+def main(df, method="mean"):
+    '''
+        Computes the h3 cells covering a given dataset.
+
+        Parameters:
+            df (GeoDataFrame): Dataframe with geometry info
+            method (optional, str): Method of aggregation for large resolutions
+
+        Returns:
+            GeoDataFrame: Dataframe converted to H3
+    '''
+    
 
     # Apply function to GeoDataFrame
 

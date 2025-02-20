@@ -3,6 +3,16 @@ import numpy as np
 
 
 def get_city(path, bbox):
+    """
+    Reads a csv in the unica_sociodemographics folder, formats it appropiately as a geoDataFrame and restricts it to the bbox.
+    Parameters:
+        path (str): Path of the file to read.
+        bbox (list): Array containing the bounding box, in format [x_min, y_min, x_max, y_max].
+    Return:
+        (geoDataFrame): Dataframe restricted to the bounding box.
+
+    """
+
     df = gpd.read_file(path)
     df = df.replace("", np.nan, regex=True)
     for col in [c for c in df.columns if c not in ["geom", "geoid", "do_date"]]:

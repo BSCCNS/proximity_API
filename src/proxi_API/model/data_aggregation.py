@@ -1,10 +1,10 @@
-import geopandas as gpd
 import numpy as np
-import pandas as pd
 from pathlib import Path
-from proxi_API.data.settings import CUTOFF
 
-data = Path(__file__).parents[1] / "data" / "cities"
+data = Path(__file__).parents[1] / "data" / "cities"  #Data path
+
+
+# Labels for the aggregation of data
 
 cols = [
     "residentes",
@@ -13,9 +13,8 @@ cols = [
     "compras_ocio",
     "acceso_hosteler_a",
     "acceso_tpte_p_blico",
-]
+] 
 
-ages = ["00_14", "15_24", "25_44", "45_64", "65_79", "80_mas"]
 
 categ = [
     "culture_foot",
@@ -29,10 +28,14 @@ categ = [
     "transport_foot",
 ]
 
-bins = [0, 12450, 20200, 36000, 60000, 300000, 1000000]  # Bin edges
-
 
 def agg(col):
+    """
+    Dictionary for aggregation of data.
+
+    Parameters:
+        col (str): Name of the column of the dataset. 
+    """
     if col.find("total") >= 0:
         return "sum"  # for columns indicating total quantities, we sum them
     else:
@@ -40,22 +43,17 @@ def agg(col):
 
 
 def main(pedestrian, proximity, sdemo):
+    """
+    Aggregates the datasets by using spatial joins. It projects the street info into the cells of the proximity dataset.
+    
+    Parameters:
+        pedestrian (df): Dataset containing the information about pedestrian flow
+        proximity (df): Dataset containing the information about proximity time
+        sdemo (df): Dataset containing socio-demographic data
 
-    sdemo["men"] = 0
-    sdemo["women"] = 0
-    for age in ages:
-        sdemo["p_ed_" + age] = sdemo["p_ed_" + age + "_h"] + sdemo["p_ed_" + age + "_m"]
-        sdemo["men"] += sdemo["p_ed_" + age + "_h"]
-        sdemo["women"] += sdemo["p_ed_" + age + "_m"]
-
-    # Let us also bin the data by income
-
-    labels = [f"income_{x}" for x in bins[1:]]  # Labels for each bin
-
-    sdemo["income_bin"] = pd.cut(
-        sdemo["renta_hab_disp"], bins=bins, labels=labels, right=False
-    )
-
+    Returns:
+        df: Dataset with aggregated data
+    """
     prox = proximity.set_crs(proximity.crs)
     proximity_expanded = prox.sjoin(
         pedestrian, how="inner", predicate="intersects"
