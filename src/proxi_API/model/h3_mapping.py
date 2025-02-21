@@ -38,10 +38,11 @@ def main(df, method="mean"):
     for col in df.columns:
         if col != "geometry":
             if df[col].dtype in ["int64", "float64"]:  # Numeric columns
-                dic[col] = "mean"
+                dic[col] = "sum"
             else:
                 dic[col] = "first"  # Non-numeric columns
     dic["h3_id"] = "first"  # Ensure h3_id is retained
+    dic['proximity_time_foot'] = 'mean'
 
     df_grouped = df.dissolve(by="h3_id", aggfunc=dic)
 

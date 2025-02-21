@@ -51,6 +51,9 @@ def main(CITY):
             proximity = gpd.read_file(data / "proximity_time_spain" / f"{CITY}.geojson")
         proximity = proximity.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
+        proximity = proximity[['geometry', 'proximity_time_foot']]
+        
+
         # If the file exists, we do not compute it
         if not Path(out / f"{CITY}_{H3_ZOOM}_pedestrian.geojson").is_file():
             path = data / "unica_pedestrian"
@@ -72,6 +75,7 @@ def main(CITY):
                 pedestrian[col + "_total"] = pedestrian["imd"] * pedestrian[col]
 
             pedestrian = pedestrian.set_crs(proximity.crs)
+            pedestrian = pedestrian[[x + '_total' for x in cols]+ ['geom', 'geoid']]
             pedestrian.to_file(
                 out / f"{CITY}_{H3_ZOOM}_pedestrian.geojson", driver="GeoJSON"
             )
@@ -97,7 +101,7 @@ def main(CITY):
             )
             sdemo = pd.concat(result)
             sdemo["do_date"] = pd.to_datetime(sdemo.do_date)
-            sdemo = sdemo[sdemo["p_t"] != 0]
+            sdemo = sdemo[sdemo["p_t"] != 0][['p_t','geom', 'geoid' ]]
             sdemo = sdemo.set_crs(proximity.crs)
             sdemo.to_file(out / f"{CITY}_{H3_ZOOM}_demo.geojson", driver="GeoJSON")
             logger.info("Demographic dataset saved to temp folder.")

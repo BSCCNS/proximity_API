@@ -19,6 +19,9 @@ def main(agg):
 
 
     """
+
+    # ESTAS HACIENDO MEDIAS AL AGREGAR, EN VEZ DE SUMAR!!!!!!!!!!!!!
+    
     agg["mob_index"] = agg.proximity_time_foot * agg.p_t / agg.p_t.sum()
     agg["residentes_index"] = (
         agg.proximity_time_foot * agg.residentes_total / agg.residentes_total.sum()

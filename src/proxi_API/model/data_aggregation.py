@@ -38,6 +38,7 @@ def agg(col):
     """
     if col.find("total") >= 0:
         return "sum"  # for columns indicating total quantities, we sum them
+
     else:
         return "mean"  # for columns indicating ratios, we average them
 
@@ -63,6 +64,7 @@ def main(pedestrian, proximity, sdemo):
         sdemo, how="inner", predicate="intersects"
     )
 
+
     drop_cols = [
         col
         for col in proximity_expanded.columns
@@ -75,6 +77,7 @@ def main(pedestrian, proximity, sdemo):
         if col not in drop_cols + ["geom"]
     }
     aggdict["geoid_left"] = "first"
+    aggdict['p_t'] = 'sum'
     proximity_aggregated = proximity_expanded.dissolve(
         by="geoid_left",
         aggfunc=aggdict,
