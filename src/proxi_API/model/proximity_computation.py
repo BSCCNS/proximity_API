@@ -14,7 +14,7 @@ client = openrouteservice.Client(base_url='http://localhost:8080/ors')
 tqdm.pandas()
 # Function to apply proximity_time on a row
 # Parallel apply using Joblib
-num_cores = 6  # Use all available cores
+num_cores = -2  # Use all available cores
 
 #Now we load the category mapping
 with open('categories.json', 'r') as file:
